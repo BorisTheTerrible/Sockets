@@ -18,10 +18,10 @@ int main()
     packetMessage.command = 0;
     strncpy(packetMessage.message, "Ayyy Lmao", sizeof(packetMessage.message));
     
-    UDPSocket senderSocket((char *)"127.0.0.1", (char *)"30001", AF_INET);
+    UDPSocket senderSocket((char *)"127.0.0.1", 30001, AF_INET);
     
     printf("MSG: command=%i\n", packetMessage.command);
-    senderSocket.send(& packetMessage, sizeof(packetMessage), (char *)"127.0.0.1", (char *)"30000", AF_INET);
+    senderSocket.send(& packetMessage, sizeof(packetMessage), (char *)"127.0.0.1", 30000, AF_INET);
     
     return 0;
 }

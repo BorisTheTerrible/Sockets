@@ -24,7 +24,7 @@
 
 //Sockaddr must be deleted
 //Can return nullptr if it failed to create a valid sockaddr_in
-void * UDPSocket::getNewSockaddr_in(char * bindIp, char * bindSocket, int networkFamily)
+void * UDPSocket::getNewSockaddr_in(char * bindIp, short bindSocket, int networkFamily)
 {
     sockaddr_in * Sockaddr = new sockaddr_in();
     
@@ -36,15 +36,7 @@ void * UDPSocket::getNewSockaddr_in(char * bindIp, char * bindSocket, int networ
     
     Sockaddr->sin_family = networkFamily;//Sets the type of connection?
     
-    int port = atoi(bindSocket);//Requires a null terminated string
-    
-    if(port == 0)
-    {
-        perror("Exception: bindSocket was unable to be properly turned into a int");
-        return NULL;
-    }
-    
-    Sockaddr->sin_port = atoi(bindSocket);//Sets the socket
+    Sockaddr->sin_port = htons(bindSocket);//Converts socket from host to network order, Sets the socket
     
     inet_pton(AF_INET, bindIp, & Sockaddr->sin_addr);//Sets the ip address, Requires a null terminated string
     
@@ -55,7 +47,7 @@ void * UDPSocket::getNewSockaddr_in(char * bindIp, char * bindSocket, int networ
     return Sockaddr;
 }
 
-UDPSocket::UDPSocket(char * bindIp, char * bindSocket, int networkFamily)
+UDPSocket::UDPSocket(char * bindIp, short bindSocket, int networkFamily)
 {
     socketResult = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
     
@@ -79,11 +71,11 @@ UDPSocket::UDPSocket(char * bindIp, char * bindSocket, int networkFamily)
     
     if(bindResult == -1)
     {
-        printf("Exception: Cannot bind address: bindIp=%s bindSocket=%s\n", bindIp, bindSocket);
+        printf("Exception: Cannot bind address: bindIp=%s bindSocket=%hd\n", bindIp, bindSocket);
         return;
     }
     
-    printf("Binded address: bindResult=%i bindIp=%s bindSocket=%s\n", bindResult, bindIp, bindSocket);
+    printf("Binded address: bindResult=%i bindIp=%s bindSocket=%hd\n", bindResult, bindIp, bindSocket);
     
     UDPSocket::Sockaddr = Sockaddr;
     
@@ -109,7 +101,8 @@ void UDPSocket::receive(void * receivedData, int receivedDataBytes)
     }
 }
 
-void UDPSocket::send(void * dataToSend, int dataToSendBytes, char * receiverIp, char * receiverSocket, int networkFamily)
+void UDPSocket::send(void * dataToSend, int dataToSendBytes, char * receiverIp, short
+                     receiverSocket, int networkFamily)
 {
     if(UDPSocket::hasNoFailures)
     {
@@ -125,7 +118,7 @@ void UDPSocket::send(void * dataToSend, int dataToSendBytes, char * receiverIp, 
     
         if(sendResult == -1)
         {
-            printf("Exception: Cannot send to address: receiverIp=%s receiverSocket=%s\n", receiverIp, receiverSocket);
+            printf("Exception: Cannot send to address: receiverIp=%s receiverSocket=%hd\n", receiverIp, receiverSocket);
         }
         
         delete receiverAddress;
