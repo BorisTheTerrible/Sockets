@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <iostream>
+#include <sys/socket.h>
 
 struct packet_message
 {
@@ -13,28 +14,14 @@ using namespace std;
 
 int main()
 {
-    /*
-    unsigned int i = 1;
-    char *c = (char*)&i;
-    
-    if (*c)
-        printf("Little endian");
-    else
-        printf("Big endian");
-    
-    return 0;
-    */
-    
-    /*
     packet_message packetMessage;
     packetMessage.command = 0;
     strncpy(packetMessage.message, "Ayyy Lmao", sizeof(packetMessage.message));
     
-    UDPSocket senderSocket(0,0);
+    UDPSocket senderSocket((char *)"127.0.0.1", (char *)"30001", AF_INET);
     
     printf("MSG: command=%i\n", packetMessage.command);
-    senderSocket.send(&packetMessage, 2130706433, 30000);
-    */
+    senderSocket.send(& packetMessage, sizeof(packetMessage), (char *)"127.0.0.1", (char *)"30000", AF_INET);
     
     return 0;
 }

@@ -12,14 +12,17 @@
 class UDPSocket
 {
     public:
-        UDPSocket(char bindIp[], char bindSocket[]);
+        UDPSocket(char * bindIp, char * bindSocket, int networkFamily);
         ~UDPSocket();
         void receive(void * receivedData, int receivedDataBytes);
-        void send(void * dataToSend, int sentDataBytes, char receiverIp[], char receiverSocket[]);
+        void send(void * dataToSend, int sentDataBytes, char * receiverIp, char * receiverSocket, int networkFamily);
+        void setNetworkFamily(int networkFamily);
     
     private:
-        void * getNewSockaddr_in(char bindIp[], char bindSocket[]);
+        void * getNewSockaddr_in(char * bindIp, char * bindSocket, int networkFamily);
+    
         int socketResult;
+        int networkFamily;
         void * Sockaddr;
         bool hasNoFailures = false;
 };
