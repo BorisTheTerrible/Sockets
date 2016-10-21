@@ -22,6 +22,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+//TODO: check and convert for byte order
+//TODO: add windows and winsock support
+
 //Sockaddr must be deleted
 //Can return nullptr if it failed to create a valid sockaddr_in
 void * UDPSocket::getNewSockaddr_in(char * bindIp, short bindSocket, int networkFamily)
@@ -38,6 +41,7 @@ void * UDPSocket::getNewSockaddr_in(char * bindIp, short bindSocket, int network
     
     Sockaddr->sin_port = htons(bindSocket);//Converts socket from host to network order, Sets the socket
     
+    //TODO: check if has null terminated character
     inet_pton(AF_INET, bindIp, & Sockaddr->sin_addr);//Sets the ip address, Requires a null terminated string
     
     printf("loopy %i\n", htonl(INADDR_LOOPBACK));
@@ -93,7 +97,7 @@ void UDPSocket::receive(void * receivedData, int receivedDataBytes)
     {
         socklen_t sockaddrSize = sizeof(* ((sockaddr_in *) Sockaddr));
     
-        recvfrom(socketResult, & receivedData, receivedDataBytes, 0, (struct sockaddr *) Sockaddr, & sockaddrSize);
+        recvfrom(socketResult, receivedData, receivedDataBytes, 0, (struct sockaddr *) Sockaddr, & sockaddrSize);
     }
     else
     {
@@ -101,8 +105,7 @@ void UDPSocket::receive(void * receivedData, int receivedDataBytes)
     }
 }
 
-void UDPSocket::send(void * dataToSend, int dataToSendBytes, char * receiverIp, short
-                     receiverSocket, int networkFamily)
+void UDPSocket::send(void * dataToSend, int dataToSendBytes, char * receiverIp, short receiverSocket, int networkFamily)
 {
     if(UDPSocket::hasNoFailures)
     {

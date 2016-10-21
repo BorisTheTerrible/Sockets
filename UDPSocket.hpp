@@ -16,7 +16,6 @@ class UDPSocket
         ~UDPSocket();
         void receive(void * receivedData, int receivedDataBytes);
         void send(void * dataToSend, int sentDataBytes, char * receiverIp, short receiverSocket, int networkFamily);
-        void setNetworkFamily(int networkFamily);
     
     private:
         void * getNewSockaddr_in(char * bindIp, short bindSocket, int networkFamily);
