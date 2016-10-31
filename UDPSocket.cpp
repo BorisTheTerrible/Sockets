@@ -21,35 +21,10 @@
 #include <arpa/inet.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 //TODO: check and convert for byte order
 //TODO: add windows and winsock support
-
-//Sockaddr must be deleted
-//Can return nullptr if it failed to create a valid sockaddr_in
-void * UDPSocket::getNewSockaddr_in(char * bindIp, short bindSocket, int networkFamily)
-{
-    sockaddr_in * Sockaddr = new sockaddr_in();
-    
-    if(networkFamily != AF_INET && networkFamily != AF_INET6)
-    {
-        printf("Exception: %i is an invalid network family\n", networkFamily);
-        return NULL;
-    }
-    
-    Sockaddr->sin_family = networkFamily;//Sets the type of connection?
-    
-    Sockaddr->sin_port = htons(bindSocket);//Converts socket from host to network order, Sets the socket
-    
-    //TODO: check if has null terminated character
-    inet_pton(AF_INET, bindIp, & Sockaddr->sin_addr);//Sets the ip address, Requires a null terminated string
-    
-    printf("loopy %i\n", htonl(INADDR_LOOPBACK));
-    std::cout << Sockaddr->sin_port << std::endl;
-    std::cout << Sockaddr->sin_addr.s_addr << std::endl;
-    
-    return Sockaddr;
-}
 
 UDPSocket::UDPSocket(char * bindIp, short bindSocket, int networkFamily)
 {
@@ -67,7 +42,7 @@ UDPSocket::UDPSocket(char * bindIp, short bindSocket, int networkFamily)
     
     if(!Sockaddr)
     {
-        perror("Exception: Failed to create new sockaddr_in");
+        perror("Exception: Failed to create new sockaddr_in\n");
         return;
     }
     
@@ -89,20 +64,27 @@ UDPSocket::UDPSocket(char * bindIp, short bindSocket, int networkFamily)
 UDPSocket::~UDPSocket()
 {
     delete (sockaddr_in *)Sockaddr;
+    
+    close(socketResult);
 }
 
-void UDPSocket::receive(void * receivedData, int receivedDataBytes)
+long UDPSocket::receive(void * receivedData, int receivedDataBytes)
 {
     if(UDPSocket::hasNoFailures)
     {
         socklen_t sockaddrSize = sizeof(* ((sockaddr_in *) Sockaddr));
     
-        recvfrom(socketResult, receivedData, receivedDataBytes, 0, (struct sockaddr *) Sockaddr, & sockaddrSize);
+        //return how many bytes it has received
+        long bytesReceived = recvfrom(socketResult, receivedData, receivedDataBytes, 0, (struct sockaddr *) Sockaddr, & sockaddrSize);
+        
+        return bytesReceived;
     }
     else
     {
-        perror("Exception: Cannot receive from a socket that has failed to intialize properly!");
+        perror("Exception: Cannot receive from a socket that has failed to intialize properly!\n");
     }
+    
+    return -1;
 }
 
 void UDPSocket::send(void * dataToSend, int dataToSendBytes, char * receiverIp, short receiverSocket, int networkFamily)
@@ -113,13 +95,13 @@ void UDPSocket::send(void * dataToSend, int dataToSendBytes, char * receiverIp, 
         
         if(!receiverAddress)
         {
-            perror("Exception: Failed to create new sockaddr_in");
+            perror("Exception: Failed to create new sockaddr_in\n");
             return;
         }
     
         long sendResult = sendto(socketResult, dataToSend, dataToSendBytes, 0, (sockaddr *)receiverAddress ,  sizeof(* receiverAddress));
     
-        if(sendResult == -1)
+        if(sendResult == (long)-1)
         {
             printf("Exception: Cannot send to address: receiverIp=%s receiverSocket=%hd\n", receiverIp, receiverSocket);
         }
@@ -128,9 +110,60 @@ void UDPSocket::send(void * dataToSend, int dataToSendBytes, char * receiverIp, 
     }
     else
     {
-        perror("Exception: Cannot send from a socket that has failed to intialize properly!");
+        perror("Exception: Cannot send from a socket that has failed to intialize properly!\n");
     }
 
 }
 
+//Sockaddr must be deleted
+//Can return nullptr if it failed to create a valid sockaddr_in
+void * UDPSocket::getNewSockaddr_in(char * bindIp, short bindSocket, int networkFamily)
+{
+    //Sets endianness each time a new UDPSocket is instantiated.
+    //Doesn't need  to be like that but its the easiest way
+    UDPSocket::isBigEndian = getIsBigEndian();
+    
+    sockaddr_in * Sockaddr = new sockaddr_in();
+    
+    if(networkFamily != AF_INET && networkFamily != AF_INET6)
+    {
+        printf("Exception: %i is an invalid network family\n", networkFamily);
+        return NULL;
+    }
+    
+    //Sets the type of connection
+    Sockaddr->sin_family = networkFamily;
+    //Converts socket from host to network order, Sets the socket
+    Sockaddr->sin_port = htons(bindSocket);
+    
+    //Sets the ip address, Requires a null terminated string
+    int conversionResult = inet_pton(AF_INET, bindIp, & Sockaddr->sin_addr);
+    
+    if(conversionResult == 0)
+    {
+        printf("Exception: Failed to convert %s into an integer\n", bindIp);
+        return NULL;
+    }
+    
+    //printf("loopy %i\n", htonl(INADDR_LOOPBACK));
+    //std::cout << Sockaddr->sin_port << std::endl;
+    //std::cout << Sockaddr->sin_addr.s_addr << std::endl;
+    
+    return Sockaddr;
+}
+
+void UDPSocket::convertFromNetworkToHostByteOrder(void * ptr, int numberOfBytes)
+{
+    if(!UDPSocket::isBigEndian)
+    {
+        char bytes[numberOfBytes];
+        
+        
+    }
+}
+
+void UDPSocket::convertFromHostToNetworkByteOrder(void * ptr, int numberOfBytes)
+{
+    
+}
 

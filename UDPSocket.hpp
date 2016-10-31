@@ -14,16 +14,20 @@ class UDPSocket
     public:
         UDPSocket(char * bindIp, short bindSocket, int networkFamily);
         ~UDPSocket();
-        void receive(void * receivedData, int receivedDataBytes);
+        long receive(void * receivedData, int receivedDataBytes);
         void send(void * dataToSend, int sentDataBytes, char * receiverIp, short receiverSocket, int networkFamily);
     
     private:
         void * getNewSockaddr_in(char * bindIp, short bindSocket, int networkFamily);
+        void convertFromNetworkToHostByteOrder(void * ptr, int numberOfBytes);
+        void convertFromHostToNetworkByteOrder(void * ptr, int numberOfBytes);
+        bool getIsBigEndian();
     
+        bool hasNoFailures = false;
         int socketResult;
         int networkFamily;
         void * Sockaddr;
-        bool hasNoFailures = false;
+        static bool isBigEndian;
 };
 
 #endif /* UDPSocket_hpp */

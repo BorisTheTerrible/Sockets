@@ -15,7 +15,7 @@ using namespace std;
 int main()
 {
     packet_message packetMessage;
-    packetMessage.command = 69;
+    packetMessage.command = 0;
     strncpy(packetMessage.message, "Ayyy Lmao", sizeof(packetMessage.message));
     
     UDPSocket senderSocket((char *)"127.0.0.1", 30001, AF_INET);
