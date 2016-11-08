@@ -63,17 +63,10 @@ int main(int argumentCount, const char * arguments[])
             cout << "Command: " << packet->command << " Message: " << packet->message << endl;
             cout << "SenderIp: " << inet_ntop(AF_INET, & receivedAddress->sin_addr, str, INET_ADDRSTRLEN)
             << " SenderPort: " << ntohs(receivedAddress->sin_port) << endl;
-            
-            /* Something really weird is going on here...
-            for(int i = 0; i < length - 2; i++)
-            {
-                bitset<8> b(packet->message[i]);
-                cout << b << endl;
-                cout << packet->message[i] << endl;
-            }
-            */
         }
         while(packet->command != -1);
+        
+        delete receivedAddress;
     }
     
     return 0;

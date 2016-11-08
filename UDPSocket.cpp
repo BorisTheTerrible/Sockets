@@ -35,7 +35,7 @@ long UDPSocket::receive(void * receivedData, int receivedDataBytes, sockaddr_in 
 {
     if(getHasNoFailures())
     {
-        socklen_t sockaddrSize = sizeof(* ((sockaddr_in *) senderAddress));
+        socklen_t sockaddrSize = sizeof(* senderAddress);
     
         //The Sockaddr used in this is set to the address of the sender!
         //return how many bytes it has received
@@ -55,7 +55,7 @@ void UDPSocket::send(void * dataToSend, int dataToSendBytes, char * receiverIp, 
 {
     if(getHasNoFailures())
     {
-        sockaddr_in * receiverAddress = (sockaddr_in *) getNewSockaddr_in(receiverIp, receiverSocket, networkFamily);
+        sockaddr_in * receiverAddress = getNewSockaddr_in(receiverIp, receiverSocket, networkFamily);
         
         if(!receiverAddress)
         {

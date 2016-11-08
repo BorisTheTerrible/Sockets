@@ -19,7 +19,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-Socket::Socket(char * bindIp, short bindSocket, int networkFamily)
+Socket::Socket(char * bindIp, short bindSocket, int networkFamily) : hasNoFailures(false)
 {
     socketResult = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
     
@@ -31,7 +31,7 @@ Socket::Socket(char * bindIp, short bindSocket, int networkFamily)
     
     printf("Created socket: socketresult=%d\n", socketResult);
     
-    sockaddr_in * socketAddress = (sockaddr_in *) Socket::getNewSockaddr_in(bindIp, bindSocket, networkFamily);
+    sockaddr_in * socketAddress = Socket::getNewSockaddr_in(bindIp, bindSocket, networkFamily);
     
     if(!socketAddress)
     {
@@ -88,7 +88,7 @@ const sockaddr_in * Socket::getSocketAddress()
 
 //Sockaddr must be deleted
 //Can return nullptr if it failed to create a valid sockaddr_in
-void * Socket::getNewSockaddr_in(char * bindIp, short bindSocket, int networkFamily)
+sockaddr_in * Socket::getNewSockaddr_in(char * bindIp, short bindSocket, int networkFamily)
 {
     sockaddr_in * Sockaddr = new sockaddr_in();
     

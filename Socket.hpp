@@ -18,7 +18,7 @@ class Socket
     protected:
         Socket(char * bindIp, short bindSocket, int networkFamily);
         ~Socket();
-        void * getNewSockaddr_in(char * bindIp, short bindSocket, int networkFamily);
+        sockaddr_in * getNewSockaddr_in(char * bindIp, short bindSocket, int networkFamily);
         bool getHasNoFailures();
         void setAsFailed();
         int getSocketResult();
