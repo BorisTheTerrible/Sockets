@@ -20,7 +20,7 @@
 
 struct packet_message
 {
-    //short command;
+    int command;
     char message[16];
 };
 
@@ -28,6 +28,17 @@ using namespace std;
 
 int main(int argumentCount, const char * arguments[])
 {
+    if (htonl(47) == 47)
+    {
+        cout << "Big endian";
+    }
+    else
+    {
+        cout << "Little Endian";
+    }
+    
+    cout << sizeof(int);
+    
     char type;
     
     cout << "Please enter  c  for client or a  s  for server" << endl;
@@ -39,19 +50,19 @@ int main(int argumentCount, const char * arguments[])
         return 1;
     }
     
-    if(type == 'c')
+    if(type == 'c') //Client - sender
     {
         packet_message packetMessage;
 
-        //packetMessage.command = 0;
+        packetMessage.command = 0;
         strncpy(packetMessage.message, "Ayyy Lmao", sizeof(packetMessage.message));
         
         UDPSocket senderSocket((char *)"127.0.0.1", 30001, AF_INET);
         
-        //printf("MSG: command=%i\n", packetMessage.command);
+        printf("MSG: command=%i\n", packetMessage.command);
         senderSocket.send(& packetMessage, sizeof(packetMessage), (char *)"127.0.0.1", 30000, AF_INET);
     }
-    else
+    else //Server - receiver
     {
         UDPSocket receiverSocket((char *)"127.0.0.1", 30000, AF_INET);
         sockaddr_in * receivedAddress = new sockaddr_in;
@@ -72,12 +83,14 @@ int main(int argumentCount, const char * arguments[])
             
             packet = (packet_message *)buffer;
             
-            // << packet->command
-            cout << "Command: " << " Message: " << packet->message << endl;
+            bitset<32> bits(packet->command);
+            cout << bits << endl;
+            
+            cout << "Command: " << packet->command << " Message: " << packet->message << endl;
             cout << "SenderIp: " << inet_ntop(AF_INET, & receivedAddress->sin_addr, str, INET_ADDRSTRLEN)
             << " SenderPort: " << ntohs(receivedAddress->sin_port) << endl;
         }
-        while(true);//packet->command != -1
+        while(packet->command != -1);
         
         delete receivedAddress;
     }

@@ -15,8 +15,8 @@ class UDPSocket : public Socket
 {
     public:
         UDPSocket(char * bindIp, short bindSocket, int networkFamily);
-        long receive(void * receivedData, int receivedDataBytes, sockaddr_in * senderAddress);
-        void send(void * dataToSend, int sentDataBytes, char * receiverIp, short receiverSocket, int networkFamily);
+        long receiveData(void * receivedData, int receivedDataBytes, sockaddr_in * senderAddress);
+        void sendData(void * dataToSend, int sentDataBytes, char * receiverIp, short receiverSocket, int networkFamily);
 };
 
 #endif /* UDPSocket_hpp */

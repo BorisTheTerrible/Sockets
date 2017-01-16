@@ -26,12 +26,14 @@
 //TODO: check and convert for byte order
 //TODO: add windows and winsock support
 
-UDPSocket::UDPSocket(char * bindIp, short bindSocket, int networkFamily) : Socket(bindIp, bindSocket, networkFamily)
+UDPSocket::UDPSocket(char * bindIp, short bindSocket, int networkFamily)
+:
+Socket(bindIp, bindSocket, networkFamily, SOCK_DGRAM)
 {
     
 }
 
-long UDPSocket::receive(void * receivedData, int receivedDataBytes, sockaddr_in * senderAddress)
+long UDPSocket::receiveData(void * receivedData, int receivedDataBytes, sockaddr_in * senderAddress)
 {
     if(getHasNoFailures())
     {
@@ -51,7 +53,7 @@ long UDPSocket::receive(void * receivedData, int receivedDataBytes, sockaddr_in 
     return -1;
 }
 
-void UDPSocket::send(void * dataToSend, int dataToSendBytes, char * receiverIp, short receiverSocket, int networkFamily)
+void UDPSocket::sendData(void * dataToSend, int dataToSendBytes, char * receiverIp, short receiverSocket, int networkFamily)
 {
     if(getHasNoFailures())
     {

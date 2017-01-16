@@ -13,9 +13,9 @@
 
 class Thread
 {
-public:
-    virtual void threadRun() = 0;
-    virtual void socketRun() = 0;
+    public:
+        virtual void threadRun() = 0;
+        virtual void socketRun() = 0;
 };
 
 #endif /* Thread_hpp */

@@ -19,9 +19,11 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-Socket::Socket(char * bindIp, short bindSocket, int networkFamily) : hasNoFailures(false)
+Socket::Socket(char * bindIp, short bindSocket, int networkFamily, int protocalType) : hasNoFailures(false)
 {
-    socketResult = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+    hasNoFailures = false;
+    
+    socketResult = socket(AF_INET, protocalType, IPPROTO_UDP);
     
     if(socketResult == -1)
     {
