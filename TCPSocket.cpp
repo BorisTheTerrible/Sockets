@@ -10,7 +10,7 @@
 
 TCPSocket::TCPSocket(char * bindIp, short bindSocket, int networkFamily)
 :
-Socket(bindIp, bindSocket, networkFamily, SOCK_STREAM)
+Socket(bindIp, bindSocket, networkFamily, SOCK_STREAM, IPPROTO_TCP)
 {
     //This makes sure that either accept or connect has been succesfully been called
     hasConnected = false;

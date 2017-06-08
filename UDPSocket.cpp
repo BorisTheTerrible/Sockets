@@ -28,7 +28,7 @@
 
 UDPSocket::UDPSocket(char * bindIp, short bindSocket, int networkFamily)
 :
-Socket(bindIp, bindSocket, networkFamily, SOCK_DGRAM)
+Socket(bindIp, bindSocket, networkFamily, SOCK_DGRAM, IPPROTO_UDP)
 {
     
 }
@@ -47,6 +47,7 @@ long UDPSocket::receiveData(void * receivedData, int receivedDataBytes, sockaddr
     }
     else
     {
+        //How about you actually thrown an exception????
         perror("Exception: Cannot receive from a socket that has failed to intialize properly!\n");
     }
     

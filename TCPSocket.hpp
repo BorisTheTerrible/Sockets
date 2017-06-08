@@ -14,8 +14,9 @@
 
 class TCPSocket : public Socket
 {
-    protected:
+    public:
         TCPSocket(char * bindIp, short bindSocket, int networkFamily);
+    protected:
         //This makes sure that either accept or connect has been succesfully been called
         bool hasConnected;
     public:

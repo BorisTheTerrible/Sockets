@@ -1,4 +1,6 @@
 #include "UDPSocket.hpp"
+#include "TCPSocket.hpp"
+#include "LinkedList.hpp"
 
 #include <stdio.h>
 #include <string.h>
@@ -26,25 +28,30 @@ struct packet_message
 
 using namespace std;
 
+
 int main(int argumentCount, const char * arguments[])
 {
+    ///*
+    LinkedList<int>::createAndPrintTestCase();
+    //*/
+    
+    ///*
     if (htonl(47) == 47)
     {
-        cout << "Big endian";
+        cout << "Big endian" << endl;
     }
     else
     {
-        cout << "Little Endian";
+        cout << "Little Endian" << endl;
     }
     
-    cout << sizeof(int);
     
     char type;
     
     cout << "Please enter  c  for client or a  s  for server" << endl;
     cin >> type;
     
-    if(type != 'c' && type != 's')
+    if(type != 'c' && type != 's' && type != 'x')
     {
         cout << "Not recognized" << endl;
         return 1;
@@ -60,9 +67,9 @@ int main(int argumentCount, const char * arguments[])
         UDPSocket senderSocket((char *)"127.0.0.1", 30001, AF_INET);
         
         printf("MSG: command=%i\n", packetMessage.command);
-        senderSocket.send(& packetMessage, sizeof(packetMessage), (char *)"127.0.0.1", 30000, AF_INET);
+        senderSocket.sendData(& packetMessage, sizeof(packetMessage), (char *)"127.0.0.1", 30000, AF_INET);
     }
-    else //Server - receiver
+    else if(type == 's') //Server - receiver
     {
         UDPSocket receiverSocket((char *)"127.0.0.1", 30000, AF_INET);
         sockaddr_in * receivedAddress = new sockaddr_in;
@@ -78,7 +85,7 @@ int main(int argumentCount, const char * arguments[])
         
         do
         {
-            long length = receiverSocket.receive(buffer, 256, receivedAddress);
+            long length = receiverSocket.receiveData(buffer, 256, receivedAddress);
             char str[INET_ADDRSTRLEN];
             
             packet = (packet_message *)buffer;
@@ -94,7 +101,33 @@ int main(int argumentCount, const char * arguments[])
         
         delete receivedAddress;
     }
+    else if(type == 'x')
+    {
+        TCPSocket tcpSocket((char *)"127.0.0.1", 30000, AF_INET);
+        sockaddr_in * receivedAddress = new sockaddr_in;
+        
+        char buffer[256];
+        
+        for(int i = 0; i < 256; i++)
+        {
+            buffer[i] = 'z';
+        }
+        
+        packet_message * packet;
+        
+        long length = tcpSocket.receiveData(buffer, 256);
+        char str[INET_ADDRSTRLEN];
+            
+        packet = (packet_message *)buffer;
+            
+        cout << "Command: " << packet->command << " Message: " << packet->message << endl;
+        cout << "SenderIp: " << inet_ntop(AF_INET, & receivedAddress->sin_addr, str, INET_ADDRSTRLEN)
+        << " SenderPort: " << ntohs(receivedAddress->sin_port) << endl;
+    }
+     //*/
+ 
     
     return 0;
 }
+
 

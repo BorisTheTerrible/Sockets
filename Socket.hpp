@@ -16,7 +16,7 @@
 class Socket
 {
     protected:
-        Socket(char * bindIp, short bindSocket, int networkFamily, int protocalType);
+        Socket(char * bindIp, short bindSocket, int networkFamily, int networkType, int networkProtocal);
         ~Socket();
         sockaddr_in * getNewSockaddr_in(char * bindIp, short bindSocket, int networkFamily);
         bool getHasNoFailures();
