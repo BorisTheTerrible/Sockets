@@ -21,45 +21,46 @@
 
 Socket::Socket(char * bindIp, short bindSocket, int networkFamily, int networkType, int networkProtocal) : hasNoFailures(false)
 {
-    socketResult = socket(networkFamily, networkType, networkProtocal);
+    socketFileDesc = socket(networkFamily, networkType, networkProtocal);
     
-    if(socketResult == -1)
+    if(socketFileDesc == -1)
     {
         perror("Exception: Cannot create socket\n");
         return;
     }
     
-    printf("Created socket: socketresult=%d\n", socketResult);
+    printf("Created socket: socketFileDesc=%d\n", socketFileDesc);
     
-    sockaddr_in * socketAddress = Socket::getNewSockaddr_in(bindIp, bindSocket, networkFamily);
+    sockaddr_in * bindAddress = Socket::getNewSockaddr_in(bindIp, bindSocket, networkFamily);
     
     //Checks if socketAddress is null
-    if(!socketAddress)
+    if(!bindAddress)
     {
         perror("Exception: Failed to create new sockaddr_in\n");
         return;
     }
     
-    int bindResult = bind(socketResult, (sockaddr *) socketAddress, sizeof(* socketAddress));
+    int bindResult = bind(socketFileDesc, (sockaddr *) bindAddress, sizeof(* bindAddress));
     
     if(bindResult == -1)
     {
         printf("Exception: Cannot bind address: bindIp=%s bindSocket=%hd\n", bindIp, bindSocket);
+        perror(nullptr);
         return;
     }
     
     printf("Binded address: bindResult=%i bindIp=%s bindSocket=%hd\n", bindResult, bindIp, bindSocket);
     
-    Socket::socketAddress = socketAddress;
+    Socket::bindAddress = bindAddress;
     
     Socket::hasNoFailures = true;
 }
 
 Socket::~Socket()
 {
-    delete (sockaddr_in *)socketAddress;
+    delete (sockaddr_in *)bindAddress;
     
-    close(socketResult);
+    close(socketFileDesc);
 }
 
 bool Socket::getHasNoFailures()
@@ -72,19 +73,14 @@ void Socket::setAsFailed()
     hasNoFailures = false;
 }
 
-int Socket::getSocketResult()
+int Socket::getSocketFileDescriptor()
 {
-    return socketResult;
+    return socketFileDesc;
 }
 
-int Socket::getNetworkFamily()
+const sockaddr_in * Socket::getBindAddress()
 {
-    return networkFamily;
-}
-
-const sockaddr_in * Socket::getSocketAddress()
-{
-    return socketAddress;
+    return bindAddress;
 }
 
 //Sockaddr must be deallocated

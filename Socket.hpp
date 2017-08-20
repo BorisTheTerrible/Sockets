@@ -10,8 +10,9 @@
 #define Socket_hpp
 
 #include <stdio.h>
+#include <netinet/in.h>
 
-#include <arpa/inet.h>
+//struct sockaddr_in;
 
 class Socket
 {
@@ -21,14 +22,13 @@ class Socket
         sockaddr_in * getNewSockaddr_in(char * bindIp, short bindSocket, int networkFamily);
         bool getHasNoFailures();
         void setAsFailed();
-        int getSocketResult();
+        int getSocketFileDescriptor();
         int getNetworkFamily();
-        const sockaddr_in * getSocketAddress();
+        const sockaddr_in * getBindAddress();
     
     private:
-        int socketResult;
-        int networkFamily;
-        sockaddr_in * socketAddress;
+        int socketFileDesc;
+        sockaddr_in * bindAddress;
         bool hasNoFailures;
 };
 

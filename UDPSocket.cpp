@@ -41,7 +41,7 @@ long UDPSocket::receiveData(void * receivedData, int receivedDataBytes, sockaddr
     
         //The Sockaddr used in this is set to the address of the sender!
         //return how many bytes it has received
-        long bytesReceived = recvfrom(getSocketResult(), receivedData, receivedDataBytes, 0, (struct sockaddr *) senderAddress, & sockaddrSize);
+        long bytesReceived = recvfrom(getSocketFileDescriptor(), receivedData, receivedDataBytes, 0, (struct sockaddr *) senderAddress, & sockaddrSize);
         
         return bytesReceived;
     }
@@ -66,7 +66,7 @@ void UDPSocket::sendData(void * dataToSend, int dataToSendBytes, char * receiver
             return;
         }
     
-        long sendResult = sendto(getSocketResult(), dataToSend, dataToSendBytes, 0, (sockaddr *)receiverAddress ,  sizeof(* receiverAddress));
+        long sendResult = sendto(getSocketFileDescriptor(), dataToSend, dataToSendBytes, 0, (sockaddr *)receiverAddress ,  sizeof(* receiverAddress));
     
         if(sendResult == (long)-1)
         {

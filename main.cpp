@@ -1,6 +1,8 @@
 #include "UDPSocket.hpp"
-#include "TCPSocket.hpp"
 #include "LinkedList.hpp"
+#include "TCPListenerSocket.hpp"
+#include "TCPConnection.hpp"
+#include "Logger.hpp"
 
 #include <stdio.h>
 #include <string.h>
@@ -28,13 +30,17 @@ struct packet_message
 
 using namespace std;
 
+void networkStuff();
 
 int main(int argumentCount, const char * arguments[])
 {
-    ///*
-    LinkedList<int>::createAndPrintTestCase();
-    //*/
+    Logger::intialize(FINE);
     
+    return 0;
+}
+
+void networkStuff()
+{
     ///*
     if (htonl(47) == 47)
     {
@@ -54,13 +60,12 @@ int main(int argumentCount, const char * arguments[])
     if(type != 'c' && type != 's' && type != 'x')
     {
         cout << "Not recognized" << endl;
-        return 1;
     }
     
     if(type == 'c') //Client - sender
     {
         packet_message packetMessage;
-
+        
         packetMessage.command = 0;
         strncpy(packetMessage.message, "Ayyy Lmao", sizeof(packetMessage.message));
         
@@ -103,8 +108,9 @@ int main(int argumentCount, const char * arguments[])
     }
     else if(type == 'x')
     {
-        TCPSocket tcpSocket((char *)"127.0.0.1", 30000, AF_INET);
-        sockaddr_in * receivedAddress = new sockaddr_in;
+        TCPListenerSocket tcpSocket((char *)"127.0.0.1", 30000, AF_INET, 10);
+        
+        TCPConnection * tcpConnection = tcpSocket.waitAndAccept();
         
         char buffer[256];
         
@@ -113,21 +119,19 @@ int main(int argumentCount, const char * arguments[])
             buffer[i] = 'z';
         }
         
+        long length = tcpConnection->receiveData(buffer, 256);
+        
         packet_message * packet;
         
-        long length = tcpSocket.receiveData(buffer, 256);
         char str[INET_ADDRSTRLEN];
-            
+        
         packet = (packet_message *)buffer;
-            
+        
         cout << "Command: " << packet->command << " Message: " << packet->message << endl;
-        cout << "SenderIp: " << inet_ntop(AF_INET, & receivedAddress->sin_addr, str, INET_ADDRSTRLEN)
-        << " SenderPort: " << ntohs(receivedAddress->sin_port) << endl;
+        
+        delete tcpConnection;
     }
-     //*/
- 
-    
-    return 0;
+    //*/
 }
 
 
