@@ -1,10 +1,4 @@
-//
-//  UDPSocket.hpp
-//  Sockets
-//
-//  Created by games on 6/2/16.
-//  Copyright © 2016 games. All rights reserved.
-//
+
 
 #ifndef UDPSocket_hpp
 #define UDPSocket_hpp
