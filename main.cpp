@@ -1,6 +1,7 @@
 #include "UDPSocket.hpp"
 #include "TCPListenerSocket.hpp"
 #include "TCPConnection.hpp"
+#include "EnvironmentChecks.hpp"
 
 #include <stdio.h>
 #include <string.h>

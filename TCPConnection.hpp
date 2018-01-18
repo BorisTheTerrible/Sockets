@@ -21,10 +21,7 @@ public:
     ~TCPConnection();
     
     /*
-     The method will block until it receives the total 
      0 is returned in the case that the socket is closed while blocking
-     
-        No it wont you crazy hoe?
      */
     long receiveData(void * receivedData, int receivedDataBytes);
     

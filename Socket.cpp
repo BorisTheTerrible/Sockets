@@ -18,6 +18,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <poll.h>
 
 Socket::Socket(char * bindIp, short bindSocket, int networkFamily, int networkType, int networkProtocal) : hasNoFailures(false)
 {
